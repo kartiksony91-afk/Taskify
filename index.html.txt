@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SarkariNaukri - Govt Job Updates</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',sans-serif;background:#0f172a;color:#f8fafc;min-height:100vh}
+  ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:#1e293b}::-webkit-scrollbar-thumb{background:#f59e0b;border-radius:2px}
+  .header{background:linear-gradient(135deg,#1e3a5f,#0f172a);border-bottom:2px solid #f59e0b;padding:0 16px}
+  .header-inner{max-width:760px;margin:0 auto;padding:16px 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+  .logo{display:flex;align-items:center;gap:10px}
+  .logo-icon{width:40px;height:40px;background:#f59e0b;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px}
+  .logo-title{font-weight:700;font-size:18px;color:#f59e0b}
+  .logo-sub{font-size:11px;color:#94a3b8}
+  .admin-btns{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .add-btn{background:#f59e0b;color:#0f172a;border:none;border-radius:8px;padding:8px 14px;font-weight:700;cursor:pointer;font-size:12px}
+  .add-btn:hover{opacity:.85}
+  .rss-btn{background:#22c55e;color:#fff;border:none;border-radius:8px;padding:8px 14px;font-weight:700;cursor:pointer;font-size:12px}
+  .rss-btn:hover{opacity:.85}
+  .login-btn{background:#1e293b;color:#f59e0b;border:1px solid #f59e0b;border-radius:8px;padding:8px 14px;font-weight:700;cursor:pointer;font-size:12px}
+  .login-btn:hover{background:#f59e0b;color:#0f172a}
+  .logout-btn{background:#334155;color:#f8fafc;border:none;border-radius:8px;padding:8px 12px;font-weight:600;cursor:pointer;font-size:12px}
+  .logout-btn:hover{background:#ef4444}
+  .admin-tag{background:#f59e0b22;border:1px solid #f59e0b55;color:#f59e0b;font-size:11px;padding:4px 10px;border-radius:6px;font-weight:700}
+  .stats-bar{background:#1e293b;border-bottom:1px solid #334155}
+  .stats-inner{max-width:760px;margin:0 auto;padding:10px 16px;display:flex;gap:24px;overflow-x:auto}
+  .stat{display:flex;align-items:center;gap:8px;white-space:nowrap}
+  .stat-val{font-size:20px;font-weight:700;color:#f59e0b}
+  .stat-lbl{font-size:11px;color:#94a3b8}
+  /* RSS Bar */
+  .rss-bar{background:#052e16;border-bottom:1px solid #166534;padding:8px 16px}
+  .rss-bar-inner{max-width:760px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+  .rss-status{font-size:12px;color:#86efac;display:flex;align-items:center;gap:6px}
+  .rss-dot{width:8px;height:8px;border-radius:50%;background:#22c55e;animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+  .rss-refresh{background:#166534;color:#86efac;border:none;border-radius:6px;padding:4px 12px;font-size:11px;cursor:pointer;font-weight:600}
+  .rss-refresh:hover{background:#15803d}
+  .rss-last{font-size:11px;color:#4ade80}
+  .main{max-width:760px;margin:0 auto;padding:16px}
+  .search-wrap{position:relative;margin-bottom:14px}
+  .search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:16px}
+  .search-input{width:100%;padding:12px 12px 12px 42px;background:#1e293b;border:1px solid #334155;border-radius:10px;color:#f8fafc;font-size:14px;outline:none}
+  .cats{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin-bottom:16px}
+  .cat-btn{padding:6px 14px;border-radius:20px;border:1px solid #334155;background:#1e293b;color:#94a3b8;font-weight:600;font-size:12px;cursor:pointer;white-space:nowrap;transition:all .2s}
+  .cat-btn:hover,.cat-btn.active{background:#f59e0b;color:#0f172a;border-color:#f59e0b}
+  .tab-bar{display:flex;gap:4px;margin-bottom:16px;background:#1e293b;border-radius:10px;padding:4px}
+  .tab{flex:1;padding:8px;text-align:center;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:#64748b;border:none;background:none}
+  .tab.active{background:#0f172a;color:#f59e0b}
+  .jobs-list{display:flex;flex-direction:column;gap:12px}
+  .job-card{background:#1e293b;border:1px solid #334155;border-radius:14px;padding:16px;cursor:pointer;transition:all .25s;position:relative}
+  .job-card:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(245,158,11,.2)}
+  .job-card.rss-card{border-color:#166534}
+  .new-badge{position:absolute;top:14px;right:14px;background:#ef4444;color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px}
+  .rss-badge{position:absolute;top:14px;right:14px;background:#166534;color:#86efac;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px}
+  .card-inner{display:flex;align-items:flex-start;gap:12px}
+  .card-icon{width:44px;height:44px;background:#0f172a;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+  .card-body{flex:1}
+  .card-title{font-weight:700;font-size:15px;margin-bottom:4px;padding-right:56px}
+  .card-dept{font-size:12px;color:#94a3b8;margin-bottom:10px}
+  .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11px;padding:3px 10px;border-radius:6px}
+  .tag-dark{background:#0f172a;color:#94a3b8}
+  .tag-gold{background:#0f172a;color:#f59e0b}
+  .tag-red{background:#0f172a;color:#ef4444}
+  .tag-green{background:#052e16;color:#86efac}
+  .empty{text-align:center;padding:60px 20px;color:#475569}
+  .empty-icon{font-size:48px;margin-bottom:12px}
+  /* Overlays */
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);display:flex;align-items:flex-end;justify-content:center;z-index:50}
+  .overlay-center{position:fixed;inset:0;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;z-index:100}
+  .modal{background:#1e293b;border-radius:20px 20px 0 0;width:100%;max-width:760px;max-height:85vh;overflow-y:auto;padding:24px}
+  .modal-center{background:#1e293b;border-radius:16px;width:90%;max-width:400px;padding:28px;border:1px solid #334155}
+  .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+  .modal-title{font-weight:700;font-size:18px;color:#f59e0b}
+  .close-btn{background:#334155;border:none;color:#f8fafc;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:16px}
+  .detail-desc{font-size:13px;color:#cbd5e1;margin-bottom:20px;line-height:1.6}
+  .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+  .detail-cell{background:#0f172a;border-radius:10px;padding:12px}
+  .detail-lbl{font-size:11px;color:#64748b;margin-bottom:4px}
+  .detail-val{font-weight:600;font-size:13px}
+  .action-row{display:flex;gap:10px}
+  .edit-btn{flex:1;background:#f59e0b;color:#0f172a;border:none;border-radius:10px;padding:12px;font-weight:700;cursor:pointer;font-size:14px}
+  .del-btn{flex:1;background:#ef4444;color:#fff;border:none;border-radius:10px;padding:12px;font-weight:700;cursor:pointer;font-size:14px}
+  .visit-btn{flex:1;background:#166534;color:#86efac;border:none;border-radius:10px;padding:12px;font-weight:700;cursor:pointer;font-size:14px}
+  .edit-btn:hover,.del-btn:hover,.visit-btn:hover{opacity:.85}
+  .form-field{margin-bottom:12px}
+  .form-label{font-size:12px;color:#94a3b8;margin-bottom:4px;display:block}
+  .form-input{width:100%;padding:10px 14px;background:#0f172a;border:1px solid #334155;border-radius:8px;color:#f8fafc;font-size:13px;outline:none}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .submit-btn{width:100%;background:#f59e0b;color:#0f172a;border:none;border-radius:10px;padding:14px;font-weight:700;cursor:pointer;font-size:15px;margin-top:4px}
+  .submit-btn:hover{opacity:.85}
+  .checkbox-row{display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13px;color:#cbd5e1;margin-bottom:8px}
+  .login-box-title{font-size:22px;font-weight:700;color:#f59e0b;text-align:center;margin-bottom:6px}
+  .login-box-sub{font-size:12px;color:#64748b;text-align:center;margin-bottom:24px}
+  .pw-wrap{position:relative;margin-bottom:16px}
+  .pw-input{width:100%;padding:12px 44px 12px 14px;background:#0f172a;border:1px solid #334155;border-radius:10px;color:#f8fafc;font-size:15px;outline:none;letter-spacing:2px}
+  .pw-input:focus{border-color:#f59e0b}
+  .pw-eye{position:absolute;right:14px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:18px;background:none;border:none;color:#94a3b8}
+  .login-submit{width:100%;background:#f59e0b;color:#0f172a;border:none;border-radius:10px;padding:13px;font-weight:700;cursor:pointer;font-size:15px}
+  .login-submit:hover{opacity:.85}
+  .err-msg{color:#ef4444;font-size:12px;text-align:center;margin-bottom:10px;display:none}
+  .cancel-link{display:block;text-align:center;margin-top:14px;color:#64748b;font-size:12px;cursor:pointer}
+  .cancel-link:hover{color:#94a3b8}
+  .viewer-note{background:#1e293b;border:1px dashed #334155;border-radius:10px;padding:10px 16px;text-align:center;font-size:12px;color:#64748b;margin-bottom:14px}
+  .viewer-note span{color:#f59e0b;cursor:pointer;font-weight:600}
+  /* RSS Modal */
+  .rss-feed-item{background:#0f172a;border-radius:8px;padding:10px 12px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .rss-feed-url{font-size:11px;color:#94a3b8;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .rss-del-btn{background:#ef444422;color:#ef4444;border:none;border-radius:6px;padding:4px 10px;font-size:11px;cursor:pointer}
+  .loading-spinner{text-align:center;padding:30px;color:#94a3b8;font-size:13px}
+  .spin{display:inline-block;animation:spin 1s linear infinite;font-size:24px;margin-bottom:8px}
+  @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-icon">🏛️</div>
+      <div>
+        <div class="logo-title">SarkariNaukri</div>
+        <div class="logo-sub">Government Job Updates</div>
+      </div>
+    </div>
+    <div class="admin-btns" id="headerBtns"></div>
+  </div>
+</div>
+
+<div class="rss-bar" id="rssBar" style="display:none">
+  <div class="rss-bar-inner">
+    <div class="rss-status"><span class="rss-dot"></span><span id="rssStatusText">RSS Feed Active</span></div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <span class="rss-last" id="rssLastUpdate"></span>
+      <button class="rss-refresh" onclick="fetchAllFeeds()">🔄 Refresh</button>
+    </div>
+  </div>
+</div>
+
+<div class="stats-bar">
+  <div class="stats-inner" id="statsBar"></div>
+</div>
+
+<div class="main">
+  <div id="viewerBanner"></div>
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input class="search-input" id="searchInput" placeholder="Job ya department search karein..." oninput="renderJobs()"/>
+  </div>
+  <div class="cats" id="catBar"></div>
+  <div class="tab-bar">
+    <button class="tab active" id="tab-all" onclick="switchTab('all')">📋 Sabhi Jobs</button>
+    <button class="tab" id="tab-manual" onclick="switchTab('manual')">✍️ Manual</button>
+    <button class="tab" id="tab-rss" onclick="switchTab('rss')">📡 RSS Feed</button>
+  </div>
+  <div class="jobs-list" id="jobsList"></div>
+</div>
+
+<!-- Login Modal -->
+<div class="overlay-center" id="loginModal" style="display:none">
+  <div class="modal-center">
+    <div class="login-box-title">🔐 Admin Login</div>
+    <div class="login-box-sub">Sirf admin hi jobs add/edit/delete kar sakta hai</div>
+    <div class="pw-wrap">
+      <input class="pw-input" type="password" id="pwInput" placeholder="Password dalein" onkeydown="if(event.key==='Enter')doLogin()"/>
+      <button class="pw-eye" onclick="togglePw()" id="eyeBtn">👁️</button>
+    </div>
+    <div class="err-msg" id="errMsg">❌ Wrong password! Dobara try karein.</div>
+    <button class="login-submit" onclick="doLogin()">🔓 Login Karein</button>
+    <span class="cancel-link" onclick="closeLogin()">Cancel — Sirf dekhna hai</span>
+  </div>
+</div>
+
+<!-- RSS Manage Modal -->
+<div class="overlay-center" id="rssModal" style="display:none">
+  <div class="modal-center" style="max-width:480px">
+    <div class="modal-header">
+      <div class="modal-title">📡 RSS Feed Manager</div>
+      <button class="close-btn" onclick="closeRssModal()">✕</button>
+    </div>
+    <p style="font-size:12px;color:#64748b;margin-bottom:16px;line-height:1.6">Sarkari job websites ki RSS feed URL add karein. App automatically nayi jobs fetch karegi.</p>
+    <div class="form-field">
+      <label class="form-label">RSS Feed URL add karein</label>
+      <div style="display:flex;gap:8px">
+        <input class="form-input" id="rssUrlInput" placeholder="https://example.com/feed" style="flex:1"/>
+        <button onclick="addFeed()" style="background:#22c55e;color:#fff;border:none;border-radius:8px;padding:10px 16px;font-weight:700;cursor:pointer;white-space:nowrap">+ Add</button>
+      </div>
+    </div>
+    <div style="margin-bottom:12px">
+      <div style="font-size:11px;color:#64748b;margin-bottom:8px">⚡ Popular feeds (click to add):</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">
+        <button onclick="quickAdd('https://www.sarkariresult.com/feed/')" style="background:#1e293b;color:#94a3b8;border:1px solid #334155;border-radius:6px;padding:4px 10px;font-size:11px;cursor:pointer">SarkariResult</button>
+        <button onclick="quickAdd('https://rojgarresult.com/feed/')" style="background:#1e293b;color:#94a3b8;border:1px solid #334155;border-radius:6px;padding:4px 10px;font-size:11px;cursor:pointer">RojgarResult</button>
+        <button onclick="quickAdd('https://www.freshersworld.com/jobs/rss')" style="background:#1e293b;color:#94a3b8;border:1px solid #334155;border-radius:6px;padding:4px 10px;font-size:11px;cursor:pointer">FreshersWorld</button>
+        <button onclick="quickAdd('https://employment-news.in/feed/')" style="background:#1e293b;color:#94a3b8;border:1px solid #334155;border-radius:6px;padding:4px 10px;font-size:11px;cursor:pointer">Employment News</button>
+      </div>
+    </div>
+    <div id="feedList" style="margin-bottom:16px;max-height:180px;overflow-y:auto"></div>
+    <button onclick="fetchAllFeeds();closeRssModal();" style="width:100%;background:#22c55e;color:#fff;border:none;border-radius:10px;padding:12px;font-weight:700;cursor:pointer;font-size:14px">🔄 Ab Fetch Karein</button>
+  </div>
+</div>
+
+<!-- Detail Modal -->
+<div class="overlay" id="detailModal" style="display:none" onclick="closeDetail()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title" id="dmTitle"></div>
+      <button class="close-btn" onclick="closeDetail()">✕</button>
+    </div>
+    <div style="color:#94a3b8;font-size:13px;margin-bottom:16px" id="dmDept"></div>
+    <div class="detail-desc" id="dmDesc"></div>
+    <div class="detail-grid" id="dmGrid"></div>
+    <div id="dmActions"></div>
+  </div>
+</div>
+
+<!-- Add/Edit Form Modal -->
+<div class="overlay" id="formModal" style="display:none" onclick="closeForm()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title" id="formTitle">➕ Nayi Job Add Karein</div>
+      <button class="close-btn" onclick="closeForm()">✕</button>
+    </div>
+    <div class="form-field"><label class="form-label">Job Title *</label><input class="form-input" id="fTitle" placeholder="jaise: SSC CGL 2025"/></div>
+    <div class="form-field"><label class="form-label">Department *</label><input class="form-input" id="fDept" placeholder="jaise: Staff Selection Commission"/></div>
+    <div class="form-field"><label class="form-label">Total Posts</label><input class="form-input" id="fPosts" type="number" placeholder="jaise: 1000"/></div>
+    <div class="form-field"><label class="form-label">Last Date</label><input class="form-input" id="fDate" type="date"/></div>
+    <div class="form-field"><label class="form-label">Qualification</label><input class="form-input" id="fQual" placeholder="jaise: Graduation"/></div>
+    <div class="form-field"><label class="form-label">Age Limit</label><input class="form-input" id="fAge" placeholder="jaise: 18-32"/></div>
+    <div class="form-field"><label class="form-label">Salary Range</label><input class="form-input" id="fSalary" placeholder="jaise: 25500-92300"/></div>
+    <div class="form-field"><label class="form-label">Apply Link</label><input class="form-input" id="fLink" placeholder="https://..."/></div>
+    <div class="form-grid" style="margin-bottom:12px">
+      <div><label class="form-label">Category</label>
+        <select class="form-input" id="fCat">
+          <option>Central Govt</option><option>State Govt</option><option>Railway</option>
+          <option>IAS/IPS</option><option>Bank</option><option>Defence</option><option>Police</option>
+        </select>
+      </div>
+      <div><label class="form-label">Status</label>
+        <select class="form-input" id="fStatus">
+          <option>Active</option><option>Closing Soon</option><option>Result Out</option>
+          <option>Admit Card</option><option>Upcoming</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-field"><label class="form-label">Description</label>
+      <textarea class="form-input" id="fDesc" rows="3" placeholder="Job ke baare mein kuch likhein..." style="resize:vertical"></textarea>
+    </div>
+    <label class="checkbox-row"><input type="checkbox" id="fNew" checked style="width:16px;height:16px;accent-color:#f59e0b"/> 🆕 NEW badge lagaayein</label>
+    <button class="submit-btn" id="submitBtn" onclick="submitForm()">➕ Job Add Karein</button>
+  </div>
+</div>
+
+<script>
+const ADMIN_PASS = "admin123";
+const CATS = ["All","Central Govt","State Govt","Railway","IAS/IPS","Bank","Defence","Police"];
+const STATUS_COLORS = {
+  "Active":{bg:"#dcfce7",color:"#166534",dot:"#22c55e"},
+  "Closing Soon":{bg:"#fef9c3",color:"#854d0e",dot:"#eab308"},
+  "Result Out":{bg:"#dbeafe",color:"#1e40af",dot:"#3b82f6"},
+  "Admit Card":{bg:"#ede9fe",color:"#5b21b6",dot:"#8b5cf6"},
+  "Upcoming":{bg:"#f1f5f9",color:"#334155",dot:"#94a3b8"}
+};
+const CAT_ICONS = {"Railway":"🚂","IAS/IPS":"⚖️","Defence":"🪖","Bank":"🏦","Police":"👮"};
+
+let jobs = JSON.parse(localStorage.getItem("sarkari_jobs")||"null")||[
+  {id:1,title:"SSC CGL 2025",department:"Staff Selection Commission",posts:17727,lastDate:"2025-04-20",category:"Central Govt",status:"Active",qualification:"Graduation",age:"18-32",salary:"25,500 - 1,51,100",link:"#",isNew:true,isRss:false,description:"Combined Graduate Level Examination for various Group B and C posts."},
+  {id:2,title:"UPSC Civil Services 2025",department:"Union Public Service Commission",posts:1056,lastDate:"2025-05-06",category:"IAS/IPS",status:"Active",qualification:"Any Degree",age:"21-32",salary:"56,100 - 2,50,000",link:"#",isNew:true,isRss:false,description:"IAS, IPS, IFS aur anya central services ke liye rashtriya star ki pariksha."},
+  {id:3,title:"Railway RRB NTPC 2025",department:"Railway Recruitment Board",posts:11558,lastDate:"2025-03-31",category:"Railway",status:"Closing Soon",qualification:"12th / Graduation",age:"18-33",salary:"19,900 - 92,300",link:"#",isNew:false,isRss:false,description:"Non-Technical Popular Categories ke liye bharti - Clerk, Station Master etc."}
+];
+let rssFeeds = JSON.parse(localStorage.getItem("sarkari_rss_feeds")||"[]");
+let rssJobs = JSON.parse(localStorage.getItem("sarkari_rss_jobs")||"[]");
+let selectedCat = "All", editingId = null, detailId = null, isAdmin = false, activeTab = "all";
+
+function save(){localStorage.setItem("sarkari_jobs",JSON.stringify(jobs));}
+function saveRss(){localStorage.setItem("sarkari_rss_feeds",JSON.stringify(rssFeeds));localStorage.setItem("sarkari_rss_jobs",JSON.stringify(rssJobs));}
+function daysLeft(d){return d?Math.ceil((new Date(d)-new Date())/(1000*60*60*24)):999;}
+function getIcon(c){return CAT_ICONS[c]||"🏛️";}
+
+// ---- AUTH ----
+function doLogin(){
+  const v=document.getElementById("pwInput").value;
+  if(v===ADMIN_PASS){isAdmin=true;document.getElementById("loginModal").style.display="none";document.getElementById("pwInput").value="";document.getElementById("errMsg").style.display="none";renderHeader();renderJobs();}
+  else{document.getElementById("errMsg").style.display="block";document.getElementById("pwInput").value="";document.getElementById("pwInput").focus();}
+}
+function doLogout(){isAdmin=false;renderHeader();renderJobs();}
+function openLogin(){document.getElementById("loginModal").style.display="flex";setTimeout(()=>document.getElementById("pwInput").focus(),100);}
+function closeLogin(){document.getElementById("loginModal").style.display="none";}
+function togglePw(){const i=document.getElementById("pwInput");i.type=i.type==="password"?"text":"password";document.getElementById("eyeBtn").textContent=i.type==="password"?"👁️":"🙈";}
+
+// ---- HEADER ----
+function renderHeader(){
+  const el=document.getElementById("headerBtns");
+  if(isAdmin){
+    el.innerHTML=`<span class="admin-tag">👑 Admin</span>
+      <button class="rss-btn" onclick="openRssModal()">📡 RSS</button>
+      <button class="add-btn" onclick="openAddForm()">➕ Add Job</button>
+      <button class="logout-btn" onclick="doLogout()">🚪 Logout</button>`;
+  } else {
+    el.innerHTML=`<button class="login-btn" onclick="openLogin()">🔐 Admin Login</button>`;
+  }
+  const banner=document.getElementById("viewerBanner");
+  banner.innerHTML=!isAdmin?`<div class="viewer-note">👀 Aap visitor mode mein hain. <span onclick="openLogin()">Admin login karein</span> edit karne ke liye.</div>`:"";
+  // RSS bar
+  const rssBar=document.getElementById("rssBar");
+  rssBar.style.display=rssFeeds.length?"block":"none";
+  const last=localStorage.getItem("sarkari_rss_last");
+  if(last)document.getElementById("rssLastUpdate").textContent="Last update: "+last;
+  document.getElementById("rssStatusText").textContent=`📡 ${rssFeeds.length} Feed${rssFeeds.length>1?"s":""} Active — ${rssJobs.length} jobs fetched`;
+}
+
+// ---- STATS ----
+function renderStats(){
+  const allJ=[...jobs,...rssJobs];
+  const s=document.getElementById("statsBar");
+  const items=[
+    {icon:"📋",val:allJ.length,lbl:"Total Jobs"},
+    {icon:"✅",val:allJ.filter(j=>j.status==="Active"||!j.status).length,lbl:"Active"},
+    {icon:"📡",val:rssJobs.length,lbl:"RSS Jobs"},
+    {icon:"🆕",val:allJ.filter(j=>j.isNew).length,lbl:"New Posts"}
+  ];
+  s.innerHTML=items.map(i=>`<div class="stat"><span style="font-size:16px">${i.icon}</span><span class="stat-val">${i.val}</span><span class="stat-lbl">${i.lbl}</span></div>`).join("");
+}
+
+// ---- TABS ----
+function switchTab(tab){
+  activeTab=tab;
+  ["all","manual","rss"].forEach(t=>{
+    document.getElementById("tab-"+t).classList.toggle("active",t===tab);
+  });
+  renderJobs();
+}
+
+// ---- CATS ----
+function renderCats(){
+  document.getElementById("catBar").innerHTML=CATS.map(c=>`<button class="cat-btn${c===selectedCat?" active":""}" onclick="selectCat('${c}')">${c}</button>`).join("");
+}
+function selectCat(c){selectedCat=c;renderCats();renderJobs();}
+
+// ---- JOBS ----
+function renderJobs(){
+  const q=document.getElementById("searchInput").value.toLowerCase();
+  let pool=[];
+  if(activeTab==="all") pool=[...jobs,...rssJobs];
+  else if(activeTab==="manual") pool=[...jobs];
+  else pool=[...rssJobs];
+
+  const filtered=pool.filter(j=>{
+    const mc=selectedCat==="All"||j.category===selectedCat;
+    const ms=(j.title||"").toLowerCase().includes(q)||(j.department||"").toLowerCase().includes(q);
+    return mc&&ms;
+  });
+  const el=document.getElementById("jobsList");
+  if(!filtered.length){
+    el.innerHTML=`<div class="empty"><div class="empty-icon">${activeTab==="rss"?"📡":"📭"}</div><div>${activeTab==="rss"?"Koi RSS job nahi — feeds add karein aur refresh karein":"Koi job nahi mili"}</div></div>`;
+    return;
+  }
+  el.innerHTML=filtered.map(j=>{
+    const sc=STATUS_COLORS[j.status]||STATUS_COLORS["Active"];
+    const days=daysLeft(j.lastDate);
+    const dayTag=!j.lastDate?"":(days<0?'<span class="tag tag-red">⛔ Expired</span>':days===0?'<span class="tag tag-red">🔴 Aaj Last Date!</span>':days<7?`<span class="tag tag-red">📅 ${days} din baki</span>`:`<span class="tag tag-dark">📅 ${days} din baki</span>`);
+    const badge=j.isRss?'<div class="rss-badge">📡 RSS</div>':j.isNew?'<div class="new-badge">NEW</div>':"";
+    return `<div class="job-card${j.isRss?" rss-card":""}" onclick="openDetail('${j.id}','${j.isRss?'rss':'manual'}')">
+      ${badge}
+      <div class="card-inner">
+        <div class="card-icon">${getIcon(j.category)}</div>
+        <div class="card-body">
+          <div class="card-title">${j.title}</div>
+          <div class="card-dept">${j.department||j.source||""}</div>
+          <div class="tags">
+            ${j.isRss?'<span class="tag tag-green">📡 Auto-fetch</span>':`<span class="tag" style="background:${sc.bg};color:${sc.color}"><span style="width:6px;height:6px;border-radius:50%;background:${sc.dot};display:inline-block;margin-right:4px"></span>${j.status}</span>`}
+            ${j.posts?`<span class="tag tag-gold">📝 ${(j.posts||0).toLocaleString()} Posts</span>`:""}
+            ${dayTag}
+            <span class="tag tag-dark">${j.category||"General"}</span>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+// ---- DETAIL ----
+function openDetail(id, type){
+  const pool = type==="rss" ? rssJobs : jobs;
+  const j = pool.find(x=>String(x.id)===String(id));
+  if(!j) return;
+  detailId={id,type};
+  document.getElementById("dmTitle").textContent=j.title;
+  document.getElementById("dmDept").textContent=j.department||j.source||"";
+  document.getElementById("dmDesc").textContent=j.description||j.summary||"";
+  document.getElementById("dmGrid").innerHTML=[
+    {lbl:"Category",val:j.category||"General",icon:"🏷️"},
+    {lbl:"Status",val:j.status||"Active",icon:"📌"},
+    {lbl:"Posts",val:j.posts?(j.posts).toLocaleString():"N/A",icon:"📝"},
+    {lbl:"Last Date",val:j.lastDate||"N/A",icon:"📅"},
+    {lbl:"Qualification",val:j.qualification||"N/A",icon:"🎓"},
+    {lbl:"Salary",val:j.salary?"₹"+j.salary:"N/A",icon:"💰"}
+  ].map(d=>`<div class="detail-cell"><div class="detail-lbl">${d.icon} ${d.lbl}</div><div class="detail-val">${d.val}</div></div>`).join("");
+
+  let actions="";
+  if(j.isRss){
+    actions=`<div class="action-row">
+      <button class="visit-btn" onclick="window.open('${j.link||"#"}','_blank')">🔗 Website Kholein</button>
+      ${isAdmin?`<button class="del-btn" onclick="deleteRssJob('${j.id}')">🗑️ Hatao</button>`:""}
+    </div>`;
+  } else {
+    actions=isAdmin
+      ?`<div class="action-row"><button class="edit-btn" onclick="editFromDetail()">✏️ Edit</button><button class="del-btn" onclick="deleteFromDetail()">🗑️ Delete</button></div>`
+      :`<div style="text-align:center;color:#475569;font-size:12px;padding:10px 0">🔒 Edit karne ke liye Admin Login karein</div>`;
+  }
+  document.getElementById("dmActions").innerHTML=actions;
+  document.getElementById("detailModal").style.display="flex";
+}
+function closeDetail(){document.getElementById("detailModal").style.display="none";}
+function editFromDetail(){if(!isAdmin||!detailId||detailId.type==="rss")return;openEditForm(detailId.id);closeDetail();}
+function deleteFromDetail(){
+  if(!isAdmin||!detailId||detailId.type==="rss")return;
+  if(confirm("Kya aap yeh job delete karna chahte hain?")){
+    jobs=jobs.filter(j=>String(j.id)!==String(detailId.id));
+    save();renderStats();renderJobs();closeDetail();
+  }
+}
+function deleteRssJob(id){
+  rssJobs=rssJobs.filter(j=>String(j.id)!==String(id));
+  saveRss();renderStats();renderJobs();closeDetail();
+}
+
+// ---- RSS ----
+function openRssModal(){
+  if(!isAdmin){openLogin();return;}
+  renderFeedList();
+  document.getElementById("rssModal").style.display="flex";
+}
+function closeRssModal(){document.getElementById("rssModal").style.display="none";}
+
+function renderFeedList(){
+  const el=document.getElementById("feedList");
+  if(!rssFeeds.length){el.innerHTML='<div style="font-size:12px;color:#475569;text-align:center;padding:12px">Koi feed nahi add ki gayi</div>';return;}
+  el.innerHTML=rssFeeds.map((f,i)=>`<div class="rss-feed-item">
+    <span style="font-size:16px">📡</span>
+    <span class="rss-feed-url">${f}</span>
+    <button class="rss-del-btn" onclick="removeFeed(${i})">✕</button>
+  </div>`).join("");
+}
+
+function quickAdd(url){document.getElementById("rssUrlInput").value=url;addFeed();}
+
+function addFeed(){
+  const url=document.getElementById("rssUrlInput").value.trim();
+  if(!url||!url.startsWith("http")){alert("Sahi URL dalein (http se shuru hona chahiye)");return;}
+  if(rssFeeds.includes(url)){alert("Yeh feed pehle se add hai!");return;}
+  rssFeeds.push(url);
+  saveRss();
+  document.getElementById("rssUrlInput").value="";
+  renderFeedList();
+}
+
+function removeFeed(i){
+  rssFeeds.splice(i,1);
+  saveRss();
+  renderFeedList();
+}
+
+async function fetchAllFeeds(){
+  if(!rssFeeds.length){alert("Pehle koi RSS feed add karein!");return;}
+  document.getElementById("rssStatusText").textContent="⏳ Fetching...";
+  const proxyBase="https://api.rss2json.com/v1/api.json?rss_url=";
+  let newJobs=[];
+  for(const feedUrl of rssFeeds){
+    try{
+      const res=await fetch(proxyBase+encodeURIComponent(feedUrl));
+      const data=await res.json();
+      if(data.status==="ok"&&data.items){
+        data.items.slice(0,20).forEach(item=>{
+          const id="rss_"+btoa(item.link||item.title).slice(0,16);
+          if(!newJobs.find(j=>j.id===id)&&!rssJobs.find(j=>j.id===id)){
+            newJobs.push({
+              id,
+              title:item.title||"Untitled",
+              department:data.feed?.title||new URL(feedUrl).hostname,
+              description:item.description?item.description.replace(/<[^>]+>/g,"").slice(0,200):"",
+              link:item.link||"#",
+              lastDate:item.pubDate?item.pubDate.slice(0,10):"",
+              category:"Central Govt",
+              status:"Active",
+              isNew:true,
+              isRss:true,
+              source:data.feed?.title||feedUrl,
+              posts:0,
+              qualification:"",
+              age:"",
+              salary:""
+            });
+          }
+        });
+      }
+    }catch(e){console.log("Feed error:",feedUrl,e);}
+  }
+  rssJobs=[...newJobs,...rssJobs].slice(0,200);
+  const now=new Date().toLocaleTimeString("hi-IN");
+  localStorage.setItem("sarkari_rss_last",now);
+  saveRss();
+  renderHeader();
+  renderStats();
+  renderJobs();
+}
+
+// ---- FORM ----
+function openAddForm(){
+  if(!isAdmin){openLogin();return;}
+  editingId=null;
+  document.getElementById("formTitle").textContent="➕ Nayi Job Add Karein";
+  document.getElementById("submitBtn").textContent="➕ Job Add Karein";
+  ["fTitle","fDept","fQual","fAge","fSalary","fLink","fDesc"].forEach(i=>document.getElementById(i).value="");
+  document.getElementById("fPosts").value="";
+  document.getElementById("fDate").value="";
+  document.getElementById("fCat").value="Central Govt";
+  document.getElementById("fStatus").value="Active";
+  document.getElementById("fNew").checked=true;
+  document.getElementById("formModal").style.display="flex";
+}
+function openEditForm(id){
+  if(!isAdmin)return;
+  editingId=id;
+  const j=jobs.find(x=>String(x.id)===String(id));
+  document.getElementById("formTitle").textContent="✏️ Job Edit Karein";
+  document.getElementById("submitBtn").textContent="✅ Update Job";
+  document.getElementById("fTitle").value=j.title;
+  document.getElementById("fDept").value=j.department;
+  document.getElementById("fPosts").value=j.posts;
+  document.getElementById("fDate").value=j.lastDate;
+  document.getElementById("fQual").value=j.qualification;
+  document.getElementById("fAge").value=j.age;
+  document.getElementById("fSalary").value=j.salary;
+  document.getElementById("fLink").value=j.link;
+  document.getElementById("fCat").value=j.category;
+  document.getElementById("fStatus").value=j.status;
+  document.getElementById("fDesc").value=j.description;
+  document.getElementById("fNew").checked=j.isNew;
+  document.getElementById("formModal").style.display="flex";
+}
+function closeForm(){document.getElementById("formModal").style.display="none";}
+function submitForm(){
+  if(!isAdmin)return;
+  const title=document.getElementById("fTitle").value.trim();
+  const dept=document.getElementById("fDept").value.trim();
+  if(!title||!dept){alert("Job title aur department zaroor bharein!");return;}
+  const job={title,department:dept,posts:parseInt(document.getElementById("fPosts").value)||0,lastDate:document.getElementById("fDate").value,qualification:document.getElementById("fQual").value,age:document.getElementById("fAge").value,salary:document.getElementById("fSalary").value,link:document.getElementById("fLink").value,category:document.getElementById("fCat").value,status:document.getElementById("fStatus").value,description:document.getElementById("fDesc").value,isNew:document.getElementById("fNew").checked,isRss:false};
+  if(editingId){jobs=jobs.map(j=>String(j.id)===String(editingId)?{...job,id:editingId}:j);}
+  else{jobs=[{...job,id:Date.now()},...jobs];}
+  save();renderStats();renderJobs();closeForm();
+}
+
+// Init
+renderHeader();renderStats();renderCats();renderJobs();
+// Auto fetch on load agar feeds hain
+if(rssFeeds.length) fetchAllFeeds();
+</script>
+</body>
+</html>
